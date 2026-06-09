@@ -3,11 +3,10 @@ from googleapiclient.discovery import build
 from collections import Counter
 import re
 
-# ==================================
-# CONFIGURACION
-# ==================================
+from conceptos import CONCEPTOS
+from nichos import NICHOS
 
- API_KEY = st.secrets["YOUTUBE_API_KEY"]
+API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
 youtube = build(
     "youtube",
@@ -15,224 +14,166 @@ youtube = build(
     developerKey=API_KEY
 )
 
-# ==================================
-# INTERFAZ
-# ==================================
+PALABRAS_PROHIBIDAS = [
+    "official video","video oficial","official music video",
+    "lyrics","lyric","letra","remix","audio oficial",
+    "audio","trailer","tráiler","vevo"
+]
 
-st.title("🔥 Buscador Viral YouTube")
+CANALES_PROHIBIDOS = ["vevo","records","music"]
 
-tema = st.text_input(
-    "Tema",
-    placeholder="Ejemplo: banderas rojas"
+st.title("🧠 Radar de Tendencias Virales")
+
+nicho = st.selectbox(
+    "Selecciona un nicho",
+    list(NICHOS.keys())
 )
 
-# ==================================
-# BUSQUEDA
-# ==================================
+tema_libre = st.text_input(
+    "O escribe cualquier tema",
+    placeholder="Ejemplo: magnesio, narcisista, menopausia..."
+)
 
-if st.button("Buscar contenido viral"):
+if st.button("🚀 Analizar"):
 
     try:
 
-        search_response = youtube.search().list(
-            q=tema,
-            part="snippet",
-            maxResults=25,
-            type="video"
-        ).execute()
-
-        video_ids = []
-
-        for item in search_response["items"]:
-            video_ids.append(
-                item["id"]["videoId"]
-            )
-
-        videos_response = youtube.videos().list(
-            part="statistics,snippet",
-            id=",".join(video_ids)
-        ).execute()
+        consultas = [tema_libre] if tema_libre.strip() else NICHOS[nicho]
 
         resultados = []
 
-        for video in videos_response["items"]:
+        for consulta in consultas:
 
-            titulo = video["snippet"]["title"]
+            search_response = youtube.search().list(
+                q=consulta,
+                part="snippet",
+                maxResults=15,
+                type="video"
+            ).execute()
 
-            canal = video["snippet"][
-                "channelTitle"
+            video_ids = [
+                item["id"]["videoId"]
+                for item in search_response["items"]
             ]
 
-            vistas = int(
-                video["statistics"].get(
-                    "viewCount",
-                    0
-                )
-            )
+            if not video_ids:
+                continue
 
-            publicado = (
-                video["snippet"][
-                    "publishedAt"
-                ][:10]
-            )
+            videos_response = youtube.videos().list(
+                part="statistics,snippet",
+                id=",".join(video_ids)
+            ).execute()
 
-            link = (
-                "https://www.youtube.com/watch?v="
-                + video["id"]
-            )
+            for video in videos_response["items"]:
 
-            resultados.append(
-                {
-                    "titulo": titulo,
-                    "canal": canal,
-                    "vistas": vistas,
-                    "publicado": publicado,
-                    "link": link
-                }
-            )
+                titulo_lower = video["snippet"]["title"].lower()
+                canal_lower = video["snippet"]["channelTitle"].lower()
 
-        resultados.sort(
-            key=lambda x: x["vistas"],
-            reverse=True
-        )
+                if any(x in titulo_lower for x in PALABRAS_PROHIBIDAS):
+                    continue
 
-        # ==================================
-        # RADAR DE OPORTUNIDADES V2 + V3
-        # ==================================
+                if any(x in canal_lower for x in CANALES_PROHIBIDOS):
+                    continue
 
-        stopwords = {
-            "de", "la", "el", "en",
-            "y", "a", "que",
-            "los", "las", "un",
-            "una", "por", "para",
-            "con", "del", "al",
-            "es", "como", "cómo",
-            "qué", "porque",
-            "este", "esta",
-            "estos", "estas",
-            "desde", "hasta",
-            "sobre", "entre",
-            "más", "menos",
-            "todo", "todos",
-            "todas",
-            "video", "videos",
-            "oficial",
-            "completo",
-            "directo",
-            "edicion",
-            "edición"
-        }
+                resultados.append({
+                    "titulo": video["snippet"]["title"],
+                    "canal": video["snippet"]["channelTitle"],
+                    "vistas": int(video["statistics"].get("viewCount", 0)),
+                    "publicado": video["snippet"]["publishedAt"][:10],
+                    "link": "https://www.youtube.com/watch?v=" + video["id"]
+                })
 
-        frases = Counter()
-        vistas_frases = {}
+        resultados.sort(key=lambda x: x["vistas"], reverse=True)
+
+        radar = Counter()
+        vistas_radar = {}
 
         for r in resultados:
 
-            titulo = r["titulo"].lower()
+            titulo = re.sub(r"[^\w\s]", "", r["titulo"].lower())
 
-            titulo = re.sub(
-                r"[^\w\s]",
-                "",
-                titulo
+            for concepto, palabras in CONCEPTOS.items():
+
+                for palabra in palabras:
+
+                    if palabra.lower() in titulo:
+
+                        radar[concepto] += 1
+                        vistas_radar.setdefault(concepto, 0)
+                        vistas_radar[concepto] += r["vistas"]
+
+        todos_los_titulos = " ".join([r["titulo"] for r in resultados]).lower()
+        todos_los_titulos = re.sub(r"[^\w\s]", "", todos_los_titulos)
+
+        palabras = todos_los_titulos.split()
+
+        stopwords = {
+            "de","la","el","en","y","a","que","los","las","un","una",
+            "por","para","con","del","al","como","más","mas","esto",
+            "esta","este","estas","estos","porque","sobre","desde",
+            "hasta","entre","cuando","donde","cómo","qué","video",
+            "viral","shorts"
+        }
+
+        palabras_filtradas = [
+            p for p in palabras
+            if p not in stopwords and len(p) > 3
+        ]
+
+        conteo_palabras = Counter(palabras_filtradas)
+
+        st.subheader("🔥 Palabras Más Repetidas")
+
+        for palabra, cantidad in conteo_palabras.most_common(15):
+            st.write(f"🔥 {palabra} ({cantidad})")
+
+        bigramas = []
+
+        for i in range(len(palabras_filtradas) - 1):
+            bigramas.append(
+                palabras_filtradas[i] + " " + palabras_filtradas[i + 1]
             )
 
-            palabras = [
-                p
-                for p in titulo.split()
-                if p not in stopwords
-                and len(p) > 3
-            ]
+        conteo_bigramas = Counter(bigramas)
 
-            for i in range(
-                len(palabras) - 1
-            ):
+        st.subheader("🧠 Temas Emergentes")
 
-                frase = (
-                    palabras[i]
-                    + " "
-                    + palabras[i + 1]
-                )
+        for frase, cantidad in conteo_bigramas.most_common(10):
+            st.write(f"🚀 {frase} ({cantidad})")
 
-                frases[frase] += 1
+        st.subheader("💡 Ideas Detectadas Automáticamente")
 
-                vistas_frases.setdefault(
-                    frase,
-                    0
-                )
+        for frase, cantidad in conteo_bigramas.most_common(5):
+            st.write(f"• Lo que nadie te cuenta sobre {frase}")
+            st.write(f"• El error más común relacionado con {frase}")
 
-                vistas_frases[frase] += (
-                    r["vistas"]
-                )
+        st.subheader("🔥 Oportunidades Detectadas")
 
-        st.subheader(
-            "🧠 Radar de oportunidades virales"
-        )
-
-        top_frases = (
-            frases.most_common(15)
-        )
-
-        for frase, apariciones in top_frases:
-
-            vistas = vistas_frases.get(
-                frase,
-                0
-            )
-
-            puntaje = (
-                apariciones * 10
-                + min(
-                    vistas // 100000,
-                    100
-                )
-            )
+        for concepto, cantidad in radar.most_common():
+            vistas = vistas_radar.get(concepto, 0)
+            puntaje = cantidad * 10 + min(vistas // 100000, 100)
 
             st.markdown(
                 f"""
-### 🔥 {frase}
+### {concepto}
 
-📊 Apariciones: {apariciones}
+📊 Apariciones: {cantidad}
 
 👀 Vistas acumuladas: {vistas:,}
 
-🚀 Puntaje viral: {puntaje}
+🚀 Puntaje Viral: {puntaje}
 """
             )
 
-        st.write("---")
+        st.subheader("🏆 Videos Más Relevantes")
 
-        # ==================================
-        # VIDEOS
-        # ==================================
-
-        st.subheader(
-            "🏆 Videos más vistos"
-        )
-
-        for r in resultados:
-
-            st.markdown(
-                f"### {r['titulo']}"
-            )
-
-            st.write(
-                f"Canal: {r['canal']}"
-            )
-
-            st.write(
-                f"👀 Vistas: {r['vistas']:,}"
-            )
-
-            st.write(
-                f"📅 Publicado: {r['publicado']}"
-            )
-
-            st.write(
-                r["link"]
-            )
-
+        for r in resultados[:30]:
+            st.markdown(f"### {r['titulo']}")
+            st.write(f"Canal: {r['canal']}")
+            st.write(f"👀 Vistas: {r['vistas']:,}")
+            st.write(f"📅 Publicado: {r['publicado']}")
+            st.write(r["link"])
             st.write("---")
 
     except Exception as e:
-
         st.error(str(e))
