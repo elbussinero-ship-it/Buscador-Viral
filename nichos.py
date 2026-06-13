@@ -1,5 +1,6 @@
 NICHOS = {
 
+
     "Relaciones": [
         "banderas rojas",
         "infidelidad",
@@ -12,6 +13,25 @@ NICHOS = {
         "manipulacion emocional",
         "dependencia emocional"
     ],
+
+
+    "🌿 Botánica Medicinal": [
+        "beneficios del romero",
+        "beneficios de la moringa",
+        "beneficios del jengibre",
+        "beneficios de la cúrcuma",
+        "plantas medicinales",
+        "hierbas medicinales",
+        "remedios naturales",
+        "hierbas para dormir",
+        "hierbas para la ansiedad",
+        "plantas para la memoria",
+        "plantas antiinflamatorias",
+        "plantas para la menopausia",
+        "plantas para el hígado",
+        "plantas para la circulación"
+    ],
+
 
     "Salud": [
         "menopausia",
