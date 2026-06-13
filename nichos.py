@@ -1,6 +1,5 @@
 NICHOS = {
 
-
     "Relaciones": [
         "banderas rojas",
         "infidelidad",
@@ -14,12 +13,27 @@ NICHOS = {
         "dependencia emocional"
     ],
 
-
     "🌿 Botánica Medicinal": [
         "beneficios del romero",
         "beneficios de la moringa",
         "beneficios del jengibre",
         "beneficios de la cúrcuma",
+        "beneficios del ajo",
+        "beneficios de la canela",
+        "beneficios de la manzanilla",
+        "beneficios de la sábila",
+        "beneficios del orégano",
+        "beneficios del hibisco",
+        "beneficios del eucalipto",
+        "beneficios del diente de león",
+        "beneficios del té verde",
+        "beneficios de la valeriana",
+        "beneficios de la lavanda",
+        "beneficios de la hoja de guanábana",
+        "beneficios del neem",
+        "beneficios de la cola de caballo",
+        "beneficios del boldo",
+        "beneficios del ginkgo biloba",
         "plantas medicinales",
         "hierbas medicinales",
         "remedios naturales",
@@ -31,7 +45,6 @@ NICHOS = {
         "plantas para el hígado",
         "plantas para la circulación"
     ],
-
 
     "Salud": [
         "menopausia",
