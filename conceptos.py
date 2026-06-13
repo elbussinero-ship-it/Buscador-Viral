@@ -56,7 +56,6 @@ CONCEPTOS = {
         "habitos",
         "productividad",
         "motivacion"
-
     ],
 
     "🩸 Diabetes": [
@@ -68,8 +67,11 @@ CONCEPTOS = {
 
     "🔥 Inflamación": [
         "inflamacion",
+        "inflamación",
         "inflamado",
-        "antiinflamatorio"
+        "antiinflamatorio",
+        "dolor",
+        "artritis"
     ],
 
     "👩 Menopausia": [
@@ -81,7 +83,9 @@ CONCEPTOS = {
     "🧠 Ansiedad": [
         "ansiedad",
         "estres",
-        "panico"
+        "estrés",
+        "panico",
+        "nervios"
     ],
 
     "💊 Suplementos": [
@@ -89,5 +93,39 @@ CONCEPTOS = {
         "omega 3",
         "vitamina d",
         "colageno"
+    ],
+
+    "🌿 Romero": [
+        "romero",
+        "rosemary"
+    ],
+
+    "🌿 Moringa": [
+        "moringa"
+    ],
+
+    "🌿 Jengibre": [
+        "jengibre",
+        "ginger"
+    ],
+
+    "🌿 Cúrcuma": [
+        "curcuma",
+        "cúrcuma",
+        "turmeric"
+    ],
+
+    "🧠 Memoria": [
+        "memoria",
+        "cerebro",
+        "concentración",
+        "concentracion"
+    ],
+
+    "😴 Sueño": [
+        "insomnio",
+        "dormir",
+        "sueño",
+        "sueno"
     ]
 }
