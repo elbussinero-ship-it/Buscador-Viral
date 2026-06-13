@@ -109,10 +109,24 @@ if st.button("🚀 Analizar"):
 
         stopwords = {
             "de","la","el","en","y","a","que","los","las","un","una",
-            "por","para","con","del","al","como","más","mas","esto",
-            "esta","este","estas","estos","porque","sobre","desde",
-            "hasta","entre","cuando","donde","cómo","qué","video",
-            "viral","shorts"
+        "por","para","con","del","al","como","más","mas","esto",
+        "esta","este","estas","estos","porque","sobre","desde",
+        "hasta","entre","cuando","donde","cómo","qué","video",
+        "viral","shorts",
+
+        "beneficios",
+        "benefícios",
+        "propiedades",
+        "salud",
+        "sirve",
+        "todos",
+        "dias",
+        "día",
+        "natural",
+        "naturales",
+        "medicinales",
+        "plantas",
+        "remedios"
         }
 
         palabras_filtradas = [
