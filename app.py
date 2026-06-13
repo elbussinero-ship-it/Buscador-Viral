@@ -108,27 +108,22 @@ if st.button("🚀 Analizar"):
         palabras = todos_los_titulos.split()
 
         stopwords = {
-            "de","la","el","en","y","a","que","los","las","un","una",
-        "por","para","con","del","al","como","más","mas","esto",
-        "esta","este","estas","estos","porque","sobre","desde",
-        "hasta","entre","cuando","donde","cómo","qué","video",
-        "viral","shorts",
-
-        "beneficios",
-        "benefícios",
-        "propiedades",
-        "salud",
-        "sirve",
-        "todos",
-        "dias",
-        "día",
-        "natural",
-        "naturales",
-        "medicinales",
-        "plantas",
-        "remedios"
-        }
-
+    "de", "la", "el", "en", "y", "a", "que", "los", "las", "un", "una",
+    "por", "para", "con", "del", "al", "como", "más", "mas", "esto",
+    "esta", "este", "estas", "estos", "porque", "sobre", "desde",
+    "hasta", "entre", "cuando", "donde", "cómo", "qué", "video",
+    "viral", "shorts",
+    "beneficios", "benefícios",
+    "propiedades",
+    "salud",
+    "sirve",
+    "todos",
+    "dias", "día",
+    "natural", "naturales",
+    "medicinales",
+    "plantas",
+    "remedios"
+}
         palabras_filtradas = [
             p for p in palabras
             if p not in stopwords and len(p) > 3
